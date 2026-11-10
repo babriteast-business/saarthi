@@ -1,0 +1,173 @@
+/* SAARTHI - the charioteer's console at night.
+   Cyan is instrument light (data, rings, selection). Saffron is SAARTHI's own voice:
+   it lights up only when SAARTHI speaks or something needs your attention.
+   Text sits on solid panels, never on moving particles. */
+:root{
+  --void:#03060C;--deck:#06101A;--panel:#081521;--panel-2:#0C1D2C;--panel-3:#12283B;
+  --ink:#E2F6FF;--ink-2:#9CC3D6;--ink-3:#5E8396;
+  --cyan:#5CE1FF;--cyan-2:#00B8E6;--cyan-line:rgba(92,225,255,.16);--cyan-line-2:rgba(92,225,255,.32);--cyan-wash:rgba(92,225,255,.07);
+  --saffron:#FFB547;--saffron-wash:rgba(255,181,71,.10);--saffron-line:rgba(255,181,71,.45);
+  --ok:#5BE3A8;--warn:#FFB547;--err:#FF6B7A;
+  --ui:"Chakra Petch",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+  --fast:.14s;--ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--void);color:var(--ink);font:400 15px/1.5 var(--ui);-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+kbd{font:500 11px/1 var(--mono);color:var(--ink-2);border:1px solid var(--cyan-line-2);border-bottom-width:2px;border-radius:4px;padding:3px 5px;background:var(--panel-2)}
+
+/* a faint navigation grid on the deck, like a chart table */
+.app{position:relative;height:100vh;display:grid;grid-template-columns:300px minmax(0,1fr) 320px;grid-template-rows:64px minmax(0,1fr);gap:16px;padding:0 20px 20px;
+  background:
+    linear-gradient(rgba(92,225,255,.035) 1px,transparent 1px) 0 0/48px 48px,
+    linear-gradient(90deg,rgba(92,225,255,.035) 1px,transparent 1px) 0 0/48px 48px,
+    var(--void)}
+
+/* top bar */
+.bar{grid-column:1/-1;display:flex;align-items:center;gap:24px;border-bottom:1px solid var(--cyan-line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:280px}
+.brand .mark{width:26px;height:26px;color:var(--saffron)}
+.brand span{font:600 20px/1 var(--ui);letter-spacing:.18em}
+.brand small{font:400 12px var(--mono);color:var(--ink-3);margin-left:4px}
+.bar-mid{flex:1;display:flex;gap:8px;justify-content:center}
+.chip{display:flex;align-items:center;gap:8px;height:30px;white-space:nowrap;flex-shrink:0;padding:0 12px;border:1px solid var(--cyan-line);border-radius:4px;background:var(--deck);font-size:13px}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.chip i.ok{background:var(--ok)}.chip i.warn{background:var(--warn)}.chip i.err{background:var(--err)}.chip i.live{background:var(--saffron)}
+.chip b{font-weight:500;color:var(--ink-2)}
+.chip em{font:400 12px var(--mono);font-style:normal;color:var(--ink)}
+.bar-right{display:flex;align-items:center;gap:20px}
+.kbd-btn{display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;background:none;border:1px solid var(--cyan-line);border-radius:4px;transition:border-color var(--fast)}
+.kbd-btn:hover{border-color:var(--cyan-line-2)}
+.kbd-btn span{font-size:13px;color:var(--ink-2);margin-left:4px}
+.clock{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15}
+.clock b{font:500 20px var(--mono);font-variant-numeric:tabular-nums;color:var(--cyan)}
+.clock span{font:400 12px var(--mono);color:var(--ink-3)}
+
+/* side columns and panels with corner brackets */
+.col{display:flex;flex-direction:column;gap:16px;min-height:0;overflow-y:auto;padding-top:4px;scrollbar-width:thin;scrollbar-color:var(--panel-3) transparent}
+.panel{position:relative;background:var(--panel);border:1px solid var(--cyan-line);padding:16px}
+.panel::before,.panel::after{content:"";position:absolute;width:12px;height:12px;border-color:var(--cyan);pointer-events:none}
+.panel::before{top:-1px;left:-1px;border-top:2px solid;border-left:2px solid}
+.panel::after{bottom:-1px;right:-1px;border-bottom:2px solid;border-right:2px solid}
+.panel h2{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0 0 12px;font:600 14px/1 var(--ui);letter-spacing:.08em;color:var(--ink)}
+.panel h2 span{font:400 11.5px var(--mono);letter-spacing:0;color:var(--ink-3)}
+.hint{margin:10px 0 0;font:400 12px var(--mono);color:var(--ink-3)}
+
+.stats{display:grid;grid-template-columns:1fr auto;gap:8px 12px;margin:0;font-size:13.5px}
+.stats dt{color:var(--ink-2)}
+.stats dd{margin:0;font:500 13px var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}
+.meter{grid-column:1/-1;height:4px;background:var(--panel-3);margin-top:-4px}
+.meter i{display:block;height:100%;background:var(--cyan)}
+
+.agenda,.memory,.activity{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.agenda li{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--cyan-line);font-size:14px}
+.agenda li:first-child{border-top:none}
+.agenda time{font:500 12.5px/1.6 var(--mono);color:var(--cyan)}
+.agenda li.now time{color:var(--saffron)}
+.agenda li.past{color:var(--ink-3)}
+.memory li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--cyan-line);font-size:14px;color:var(--ink-2)}
+.memory li:first-child{border-top:none}
+.memory button{background:none;border:none;color:var(--ink-3);font-size:12px;padding:0 4px}
+.memory button:hover{color:var(--err)}
+.memory .empty{color:var(--ink-3);font-size:13px}
+
+/* activity: every action SAARTHI takes, with a trust label */
+.activity li{display:grid;grid-template-columns:44px 1fr;gap:8px;padding:8px 0;border-top:1px solid var(--cyan-line);font-size:13.5px}
+.activity li:first-child{border-top:none}
+.activity time{font:400 11.5px/1.7 var(--mono);color:var(--ink-3)}
+.activity b{font-weight:500;color:var(--ink)}
+.activity .tag{display:inline-block;margin-left:6px;font:500 10.5px var(--mono);padding:1px 6px;border-radius:3px;vertical-align:1px}
+.tag.read{color:var(--cyan);background:var(--cyan-wash)}
+.tag.write{color:var(--saffron);background:var(--saffron-wash)}
+.tag.local{color:var(--ok);background:rgba(91,227,168,.1)}
+.activity p{grid-column:2;margin:2px 0 0;color:var(--ink-3);font-size:12.5px}
+
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick button{text-align:left;background:var(--deck);border:1px solid var(--cyan-line);padding:10px;font-size:13px;color:var(--ink-2);transition:border-color var(--fast),color var(--fast)}
+.quick button:hover{border-color:var(--cyan);color:var(--ink)}
+.quick button b{display:block;font:500 11px var(--mono);color:var(--ink-3);margin-bottom:4px}
+
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--cyan-line);margin-bottom:12px}
+.seg button{background:none;border:none;padding:8px 4px;font-size:12.5px;color:var(--ink-2);transition:background var(--fast),color var(--fast)}
+.seg button+button{border-left:1px solid var(--cyan-line)}
+.seg button[aria-checked="true"]{background:var(--cyan-wash);color:var(--cyan)}
+.toggle{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2);cursor:pointer}
+.toggle input{accent-color:var(--cyan);width:16px;height:16px}
+
+/* center: the chakra core, the conversation and the input */
+.center{display:grid;grid-template-rows:minmax(260px,1fr) minmax(0,auto) auto;gap:12px;min-height:0;min-width:0}
+.core-wrap{position:relative;min-height:0;display:grid;place-items:center}
+#core{position:absolute;inset:0;width:100%;height:100%}
+.core-readout{position:absolute;left:50%;bottom:0;transform:translateX(-50%);text-align:center;padding:8px 16px;background:rgba(3,6,12,.82);border:1px solid var(--cyan-line);min-width:240px}
+.state{font:600 15px/1.2 var(--ui);letter-spacing:.14em;color:var(--cyan)}
+.state-sub{font:400 12px var(--mono);color:var(--ink-3);margin-top:4px}
+body[data-state="speaking"] .state{color:var(--saffron)}
+body[data-state="error"] .state{color:var(--err)}
+
+.convo{max-height:34vh;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:4px 4px 4px 0;scrollbar-width:thin;scrollbar-color:var(--panel-3) transparent}
+.msg{max-width:78%;font-size:15px;line-height:1.55}
+.msg.you{align-self:flex-end;background:var(--panel-2);border:1px solid var(--cyan-line);padding:10px 14px;color:var(--ink)}
+.msg.sa{align-self:flex-start;border-left:2px solid var(--saffron);padding:4px 0 4px 14px;color:var(--ink)}
+.msg.sa .who{display:block;font:500 11px var(--mono);letter-spacing:.12em;color:var(--saffron);margin-bottom:4px}
+.msg details{margin-top:8px;font:400 12.5px var(--mono);color:var(--ink-3)}
+.msg summary{cursor:pointer;color:var(--ink-2)}
+.msg details ol{margin:6px 0 0;padding-left:18px}
+.confirm{margin-top:10px;border:1px solid var(--saffron-line);background:var(--saffron-wash);padding:12px 14px}
+.confirm p{margin:0 0 10px;font-size:14px}
+.confirm code{font:400 12.5px var(--mono);color:var(--saffron)}
+.confirm .row{display:flex;gap:8px}
+.btn{height:34px;padding:0 14px;border:1px solid var(--cyan-line-2);background:var(--panel-2);font-size:13.5px;transition:border-color var(--fast),background var(--fast)}
+.btn:hover{border-color:var(--cyan)}
+.btn.go{background:var(--saffron);border-color:var(--saffron);color:#1A1000;font-weight:600}
+.btn.go:hover{background:#FFC46B}
+
+.ask{display:flex;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--cyan-line-2);padding:8px;transition:border-color var(--fast)}
+.ask:focus-within{border-color:var(--cyan)}
+.ask input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--ink);font:400 16px var(--ui);padding:8px 4px}
+.ask input::placeholder{color:var(--ink-3)}
+.mic,.send{width:44px;height:44px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--cyan-line-2);color:var(--cyan);transition:background var(--fast),border-color var(--fast),color var(--fast)}
+.mic svg,.send svg{width:20px;height:20px}
+.mic:hover,.send:hover{border-color:var(--cyan)}
+.mic[aria-pressed="true"]{background:var(--saffron);border-color:var(--saffron);color:#1A1000}
+
+/* command palette */
+.palette{position:fixed;inset:0;z-index:50;background:rgba(2,4,9,.7);display:flex;justify-content:center;align-items:flex-start;padding-top:14vh}
+.palette[hidden]{display:none}
+.palette-box{width:min(620px,92vw);background:var(--panel);border:1px solid var(--cyan-line-2);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.palette-box input{width:100%;background:none;border:none;border-bottom:1px solid var(--cyan-line);outline:none;color:var(--ink);font:400 17px var(--ui);padding:16px 18px}
+#pal-list{list-style:none;margin:0;padding:6px;max-height:50vh;overflow-y:auto}
+#pal-list li{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;font-size:14.5px;color:var(--ink-2);cursor:pointer}
+#pal-list li[aria-selected="true"]{background:var(--cyan-wash);color:var(--ink);box-shadow:inset 2px 0 0 var(--cyan)}
+#pal-list li small{font:400 12px var(--mono);color:var(--ink-3)}
+.palette-foot{display:flex;gap:16px;padding:10px 16px;border-top:1px solid var(--cyan-line);font-size:12px;color:var(--ink-3)}
+
+/* boot sequence */
+.boot{position:fixed;inset:0;z-index:60;background:var(--void);display:grid;place-items:center;transition:opacity .4s var(--ease)}
+.boot.done{opacity:0;pointer-events:none}
+.boot-inner{width:min(520px,88vw)}
+.boot-mark{font:600 34px/1 var(--ui);letter-spacing:.42em;color:var(--saffron);margin-bottom:24px}
+.boot-log{list-style:none;margin:0;padding:0;font:400 13px/1.9 var(--mono);color:var(--ink-2);min-height:180px}
+.boot-log li span{color:var(--ok)}
+.boot-skip{margin-top:20px;background:none;border:1px solid var(--cyan-line);color:var(--ink-3);font:400 12px var(--mono);padding:6px 10px}
+
+/* smaller screens */
+@media (max-width:1180px){.app{grid-template-columns:260px minmax(0,1fr)}.col-right{display:none}.brand small{display:none}}
+@media (max-width:820px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh;grid-template-columns:minmax(0,1fr);grid-template-rows:auto;padding:0 12px 16px;gap:12px}
+  .bar{flex-wrap:wrap;gap:10px;padding:10px 0}
+  .brand{min-width:0}
+  .bar-mid{order:3;flex:0 0 100%;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}
+  .bar-right{margin-left:auto}
+  .brand span{font-size:17px;letter-spacing:.14em}
+  .clock b{font-size:17px}
+  .kbd-btn{display:none}
+  .center{grid-template-rows:auto auto auto}
+  .core-wrap{height:340px}
+  .convo{max-height:none}
+  .col-left{order:4;overflow:visible}
+  .msg{max-width:92%}
+}

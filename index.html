@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAARTHI</title>
+<meta name="description" content="SAARTHI, a personal AI assistant console">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/saarthi.css">
+</head>
+<body>
+<div id="boot" class="boot" aria-hidden="true">
+  <div class="boot-inner">
+    <div class="boot-mark">SAARTHI</div>
+    <ol class="boot-log" id="boot-log"></ol>
+    <button class="boot-skip" id="boot-skip">Skip</button>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <header class="bar">
+    <div class="brand"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><use href="#wheel"/></svg><span>SAARTHI</span><small>Personal assistant · v0.1</small></div>
+    <div class="bar-mid">
+      <span class="chip" id="chip-net"><i></i><b>Network</b><em>—</em></span>
+      <span class="chip" id="chip-mic"><i></i><b>Mic</b><em>Off</em></span>
+      <span class="chip" id="chip-brain"><i class="warn"></i><b>Brain</b><em>Not connected</em></span>
+    </div>
+    <div class="bar-right">
+      <button class="kbd-btn" id="open-palette" aria-label="Open command palette"><kbd>Ctrl</kbd><kbd>K</kbd><span>Commands</span></button>
+      <div class="clock"><b id="clock-time">--:--</b><span id="clock-date">—</span></div>
+    </div>
+  </header>
+
+  <aside class="col col-left">
+    <section class="panel">
+      <h2>System <span>this device</span></h2>
+      <dl class="stats" id="sys"></dl>
+    </section>
+    <section class="panel">
+      <h2>Today <span id="today-label"></span></h2>
+      <ul class="agenda" id="agenda"></ul>
+      <p class="hint">Sample items. Calendar connects in a later step.</p>
+    </section>
+    <section class="panel">
+      <h2>Memory <span id="mem-count">0 notes</span></h2>
+      <ul class="memory" id="memory"></ul>
+      <p class="hint">Say or type "remember …" to add a note.</p>
+    </section>
+  </aside>
+
+  <main class="center">
+    <div class="core-wrap">
+      <canvas id="core" aria-hidden="true"></canvas>
+      <div class="core-readout" aria-live="polite">
+        <div class="state" id="state-label">Standing by</div>
+        <div class="state-sub" id="state-sub">Press Space or the mic to talk</div>
+      </div>
+    </div>
+    <div class="convo" id="convo" aria-live="polite" aria-label="Conversation"></div>
+    <form class="ask" id="ask">
+      <button type="button" class="mic" id="mic" aria-label="Hold to talk" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      </button>
+      <label class="sr" for="q">Message SAARTHI</label>
+      <input id="q" autocomplete="off" placeholder="Ask SAARTHI, or type / for commands">
+      <button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
+    </form>
+  </main>
+
+  <aside class="col col-right">
+    <section class="panel">
+      <h2>Activity <span>what SAARTHI did</span></h2>
+      <ol class="activity" id="activity"></ol>
+    </section>
+    <section class="panel">
+      <h2>Quick commands</h2>
+      <div class="quick" id="quick"></div>
+    </section>
+    <section class="panel panel-settings">
+      <h2>Display</h2>
+      <div class="seg" role="radiogroup" aria-label="Motion">
+        <button role="radio" data-motion="full">Full motion</button>
+        <button role="radio" data-motion="reduced">Reduced</button>
+        <button role="radio" data-motion="off">Still</button>
+      </div>
+      <label class="toggle"><input type="checkbox" id="voice-out" checked><span>Speak replies aloud</span></label>
+    </section>
+  </aside>
+</div>
+
+<div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Command palette" hidden>
+  <div class="palette-box">
+    <input id="pal-q" placeholder="Type a command" autocomplete="off" aria-label="Search commands">
+    <ul id="pal-list" role="listbox"></ul>
+    <div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>Enter</kbd> run</span><span><kbd>Esc</kbd> close</span></div>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="wheel" viewBox="0 0 32 32">
+    <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <circle cx="16" cy="16" r="3.2" fill="currentColor"/>
+    <g stroke="currentColor" stroke-width="1.2"><path d="M16 3v26M3 16h26M6.8 6.8l18.4 18.4M25.2 6.8 6.8 25.2"/></g>
+  </symbol>
+</defs></svg>
+<script src="assets/saarthi.js"></script>
+</body>
+</html>
